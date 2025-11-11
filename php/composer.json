@@ -1,0 +1,31 @@
+{
+    "name": "mbpay/mbpay-sdk",
+    "description": "MBPay 商户 API 的 PHP 语言 SDK，提供商户余额查询、付款和支付链接生成功能",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "MBPay\\": "src/MBPay/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MBPay\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:mbpay/sdk.git",
+        "directory": "php"
+    }
+}
+
+
+
+
+

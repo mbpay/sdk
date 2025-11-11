@@ -1,0 +1,213 @@
+/**
+ * 类型定义
+ */
+
+import { MBPayError } from './error';
+
+/**
+ * API 统一返回结构
+ */
+export class Response {
+    private code: number;
+    private message: string;
+    private data: Record<string, any>;
+
+    constructor(code: number, message: string, data: Record<string, any>) {
+        this.code = code;
+        this.message = message;
+        this.data = data;
+    }
+
+    /**
+     * 检查响应是否成功
+     */
+    isSuccess(): boolean {
+        return this.code === 0;
+    }
+
+    /**
+     * 将响应转换为错误
+     */
+    toError(): MBPayError {
+        return new MBPayError(this.code, this.message);
+    }
+
+    /**
+     * 获取错误码
+     */
+    getCode(): number {
+        return this.code;
+    }
+
+    /**
+     * 获取错误信息
+     */
+    getMessage(): string {
+        return this.message;
+    }
+
+    /**
+     * 获取返回数据
+     */
+    getData(): Record<string, any> {
+        return this.data;
+    }
+}
+
+/**
+ * 余额查询响应
+ */
+export class BalanceResponse {
+    private balance: number;
+    private frozen: number;
+
+    constructor(balance: number, frozen: number) {
+        this.balance = balance; // 可用余额（MB）
+        this.frozen = frozen;   // 冻结余额（MB）
+    }
+
+    getBalance(): number {
+        return this.balance;
+    }
+
+    getFrozen(): number {
+        return this.frozen;
+    }
+}
+
+/**
+ * 付款响应
+ */
+export class PayResponse {
+    private platformOrderNo: string;
+    private actualAmount: number;
+    private fee: number;
+    private balance: number;
+
+    constructor(platformOrderNo: string, actualAmount: number, fee: number, balance: number) {
+        this.platformOrderNo = platformOrderNo; // 平台订单号
+        this.actualAmount = actualAmount;       // 实际支付金额（MB）
+        this.fee = fee;                         // 手续费（MB）
+        this.balance = balance;                 // 商户剩余余额（MB）
+    }
+
+    getPlatformOrderNo(): string {
+        return this.platformOrderNo;
+    }
+
+    getActualAmount(): number {
+        return this.actualAmount;
+    }
+
+    getFee(): number {
+        return this.fee;
+    }
+
+    getBalance(): number {
+        return this.balance;
+    }
+}
+
+/**
+ * 付款请求参数
+ */
+export class PayRequest {
+    private address: string;
+    private orderNo: string;
+    private amount: number;
+    private remark: string;
+
+    /**
+     * @param address 收款地址（必填）
+     * @param orderNo 商户订单号（必填）
+     * @param amount 付款金额（MB，必填，最小单位：100 = 1MB）
+     * @param remark 备注（可选）
+     */
+    constructor(address: string, orderNo: string, amount: number, remark: string = '') {
+        this.address = address;
+        this.orderNo = orderNo;
+        this.amount = amount;
+        this.remark = remark;
+    }
+
+    getAddress(): string {
+        return this.address;
+    }
+
+    getOrderNo(): string {
+        return this.orderNo;
+    }
+
+    getAmount(): number {
+        return this.amount;
+    }
+
+    getRemark(): string {
+        return this.remark;
+    }
+}
+
+/**
+ * 支付链接生成请求参数
+ */
+export class PaymentLinkRequest {
+    private orderNo: string;
+    private subject: string;
+    private amount: number;
+    private expire: number;
+    private nonce?: string;
+    private notifyUrl?: string;
+
+    /**
+     * @param orderNo 商户订单号（必填）
+     * @param subject 商品描述（必填）
+     * @param amount 订单金额（分，必填）
+     * @param expire 过期时间（分钟，必填）
+     * @param nonce 随机数（可选，不填会自动生成）
+     * @param notifyUrl 回调通知地址（可选）
+     */
+    constructor(
+        orderNo: string,
+        subject: string,
+        amount: number,
+        expire: number,
+        nonce?: string,
+        notifyUrl?: string
+    ) {
+        this.orderNo = orderNo;
+        this.subject = subject;
+        this.amount = amount;
+        this.expire = expire;
+        this.nonce = nonce;
+        this.notifyUrl = notifyUrl;
+    }
+
+    getOrderNo(): string {
+        return this.orderNo;
+    }
+
+    getSubject(): string {
+        return this.subject;
+    }
+
+    getAmount(): number {
+        return this.amount;
+    }
+
+    getExpire(): number {
+        return this.expire;
+    }
+
+    getNonce(): string | undefined {
+        return this.nonce;
+    }
+
+    getNotifyUrl(): string | undefined {
+        return this.notifyUrl;
+    }
+}
+
+
+
+
+

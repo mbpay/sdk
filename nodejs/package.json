@@ -1,0 +1,41 @@
+{
+  "name": "@mbpay/sdk",
+  "version": "1.0.0",
+  "description": "MBPay 商户 API 的 Node.js/TypeScript 语言 SDK，提供商户余额查询、付款和支付链接生成功能",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "example": "ts-node example.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mbpay",
+    "payment",
+    "sdk"
+  ],
+  "author": "MBPay",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mbpay/sdk.git",
+    "directory": "nodejs"
+  },
+  "bugs": {
+    "url": "https://github.com/mbpay/sdk/issues"
+  },
+  "homepage": "https://github.com/mbpay/sdk#readme",
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^4.9.0"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  }
+}
+
+
+
+
+
