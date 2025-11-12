@@ -119,3 +119,50 @@ class PayRequest:
         self.amount = amount
         self.remark = remark
 
+
+class PaymentOrderRequest:
+    """生成支付订单请求参数"""
+    
+    def __init__(
+        self,
+        merchant_id: int,
+        order_no: str,
+        subject: str,
+        amount: int,
+        expire: int,
+        notify_url: str
+    ):
+        """
+        生成支付订单请求参数
+        
+        Args:
+            merchant_id: 商户ID（必填）
+            order_no: 商户订单号（必填）
+            subject: 商品描述（必填）
+            amount: 订单金额（分，必填）
+            expire: 订单过期时间（Unix 时间戳，秒级，必填）
+            notify_url: 回调通知地址（必填）
+        """
+        self.merchant_id = merchant_id
+        self.order_no = order_no
+        self.subject = subject
+        self.amount = amount
+        self.expire = expire
+        self.notify_url = notify_url
+
+
+class PaymentOrderResponse:
+    """生成支付订单响应"""
+    
+    def __init__(self, payment_link: str):
+        """
+        生成支付订单响应
+        
+        Args:
+            payment_link: 收银台页面链接
+        """
+        self.payment_link = payment_link
+    
+    def __repr__(self):
+        return f"PaymentOrderResponse(payment_link={self.payment_link})"
+

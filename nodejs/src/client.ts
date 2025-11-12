@@ -6,7 +6,7 @@ import crypto from 'crypto';
 import https from 'https';
 import http from 'http';
 import { URL, URLSearchParams } from 'url';
-import { Response, BalanceResponse, PayResponse, PaymentLinkRequest, PayRequest } from './types';
+import { Response, BalanceResponse, PayResponse, PaymentLinkRequest, PayRequest, PaymentOrderRequest, PaymentOrderResponse } from './types';
 import { MBPayError } from './error';
 
 export class Client {
@@ -335,7 +335,60 @@ export class Client {
         }
         return result;
     }
+
+    /**
+     * 生成支付订单并返回收银台页面链接
+     *
+     * @param req 支付订单生成请求
+     * @returns Promise<PaymentOrderResponse>
+     * @throws MBPayError
+     */
+    async createPaymentOrder(req: PaymentOrderRequest): Promise<PaymentOrderResponse> {
+        // 参数验证
+        if (req.getMerchantId() <= 0) {
+            throw new MBPayError(0, 'merchant_id is required and must be greater than 0');
+        }
+        if (!req.getOrderNo()) {
+            throw new MBPayError(0, 'order_no is required');
+        }
+        if (!req.getSubject()) {
+            throw new MBPayError(0, 'subject is required');
+        }
+        if (req.getAmount() <= 0) {
+            throw new MBPayError(0, 'amount must be greater than 0');
+        }
+        if (req.getExpire() <= 0) {
+            throw new MBPayError(0, 'expire is required and must be greater than 0');
+        }
+        if (!req.getNotifyUrl()) {
+            throw new MBPayError(0, 'notify_url is required');
+        }
+
+        // 构建请求参数
+        const params: Record<string, string> = {
+            merchant_id: String(req.getMerchantId()),
+            order_no: req.getOrderNo(),
+            subject: req.getSubject(),
+            amount: String(req.getAmount()),
+            expire: String(req.getExpire()),
+            notify_url: req.getNotifyUrl(),
+        };
+
+        // 执行请求
+        const resp = await this.doRequest('POST', '/merchant/generatepaylink', params);
+
+        // 解析 data 字段
+        const data = resp.getData();
+        const paymentLink = data.payment_link as string;
+
+        if (!paymentLink) {
+            throw new MBPayError(0, 'invalid payment_link format in response');
+        }
+
+        return new PaymentOrderResponse(paymentLink);
+    }
 }
+
 
 
 

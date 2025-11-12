@@ -295,7 +295,59 @@ public class Client {
         }
         return result.toString();
     }
+
+    /**
+     * 生成支付订单并返回收银台页面链接
+     *
+     * @param req 支付订单生成请求
+     * @return PaymentOrderResponse 支付订单响应
+     * @throws MBPayException
+     */
+    public model.PaymentOrderResponse createPaymentOrder(model.PaymentOrderRequest req) throws MBPayException {
+        // 参数验证
+        if (req.getMerchantId() <= 0) {
+            throw new MBPayException(0, "merchant_id is required and must be greater than 0");
+        }
+        if (req.getOrderNo() == null || req.getOrderNo().isEmpty()) {
+            throw new MBPayException(0, "order_no is required");
+        }
+        if (req.getSubject() == null || req.getSubject().isEmpty()) {
+            throw new MBPayException(0, "subject is required");
+        }
+        if (req.getAmount() <= 0) {
+            throw new MBPayException(0, "amount must be greater than 0");
+        }
+        if (req.getExpire() <= 0) {
+            throw new MBPayException(0, "expire is required and must be greater than 0");
+        }
+        if (req.getNotifyUrl() == null || req.getNotifyUrl().isEmpty()) {
+            throw new MBPayException(0, "notify_url is required");
+        }
+
+        // 构建请求参数
+        Map<String, String> params = new HashMap<>();
+        params.put("merchant_id", String.valueOf(req.getMerchantId()));
+        params.put("order_no", req.getOrderNo());
+        params.put("subject", req.getSubject());
+        params.put("amount", String.valueOf(req.getAmount()));
+        params.put("expire", String.valueOf(req.getExpire()));
+        params.put("notify_url", req.getNotifyUrl());
+
+        // 执行请求
+        Response resp = doRequest("POST", "/merchant/generatepaylink", params);
+
+        // 解析 data 字段
+        Map<String, Object> data = resp.getData();
+        String paymentLink = (String) data.get("payment_link");
+
+        if (paymentLink == null || paymentLink.isEmpty()) {
+            throw new MBPayException(0, "invalid payment_link format in response");
+        }
+
+        return new model.PaymentOrderResponse(paymentLink);
+    }
 }
+
 
 
 

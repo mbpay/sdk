@@ -9,6 +9,7 @@ from . import client
 from . import balance
 from . import pay
 from . import payment_link
+from . import payment_order
 
 from .client import Client
 from .types import (
@@ -16,6 +17,8 @@ from .types import (
     PayResponse,
     PaymentLinkRequest,
     PayRequest,
+    PaymentOrderRequest,
+    PaymentOrderResponse,
     MBPayError,
     ErrorCode,
 )
@@ -27,6 +30,8 @@ __all__ = [
     "PayResponse",
     "PaymentLinkRequest",
     "PayRequest",
+    "PaymentOrderRequest",
+    "PaymentOrderResponse",
     "MBPayError",
     "ErrorCode",
 ]

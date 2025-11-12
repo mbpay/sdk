@@ -33,6 +33,21 @@ type PaymentLinkRequest struct {
 	NotifyURL string // 回调通知地址（可选）
 }
 
+// PaymentOrderRequest 生成支付订单请求参数
+type PaymentOrderRequest struct {
+	MerchantID int64  // 商户ID（必填）
+	OrderNo    string // 商户订单号（必填）
+	Subject    string // 商品描述（必填）
+	Amount     int64  // 订单金额（分，必填）
+	Expire     int64  // 订单过期时间（Unix 时间戳，秒级，必填）
+	NotifyURL  string // 回调通知地址（必填）
+}
+
+// PaymentOrderResponse 生成支付订单响应
+type PaymentOrderResponse struct {
+	PaymentLink string `json:"payment_link"` // 收银台页面链接
+}
+
 // ErrorCode 错误码常量
 const (
 	ErrCodeSuccess                   = 0     // 成功

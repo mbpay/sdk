@@ -331,7 +331,61 @@ class Client
         }
         return $result;
     }
+
+    /**
+     * 生成支付订单并返回收银台页面链接
+     *
+     * @param Types\PaymentOrderRequest $req 支付订单生成请求
+     * @return Types\PaymentOrderResponse 支付订单响应
+     * @throws MBPayException
+     */
+    public function createPaymentOrder(Types\PaymentOrderRequest $req): Types\PaymentOrderResponse
+    {
+        // 参数验证
+        if ($req->getMerchantId() <= 0) {
+            throw new MBPayException(0, 'merchant_id is required and must be greater than 0');
+        }
+        if (empty($req->getOrderNo())) {
+            throw new MBPayException(0, 'order_no is required');
+        }
+        if (empty($req->getSubject())) {
+            throw new MBPayException(0, 'subject is required');
+        }
+        if ($req->getAmount() <= 0) {
+            throw new MBPayException(0, 'amount must be greater than 0');
+        }
+        if ($req->getExpire() <= 0) {
+            throw new MBPayException(0, 'expire is required and must be greater than 0');
+        }
+        if (empty($req->getNotifyUrl())) {
+            throw new MBPayException(0, 'notify_url is required');
+        }
+
+        // 构建请求参数
+        $params = [
+            'merchant_id' => (string)$req->getMerchantId(),
+            'order_no' => $req->getOrderNo(),
+            'subject' => $req->getSubject(),
+            'amount' => (string)$req->getAmount(),
+            'expire' => (string)$req->getExpire(),
+            'notify_url' => $req->getNotifyUrl(),
+        ];
+
+        // 执行请求
+        $resp = $this->doRequest('POST', '/merchant/generatepaylink', $params);
+
+        // 解析 data 字段
+        $data = $resp->getData();
+        $paymentLink = $data['payment_link'] ?? '';
+
+        if (empty($paymentLink)) {
+            throw new MBPayException(0, 'invalid payment_link format in response');
+        }
+
+        return new Types\PaymentOrderResponse($paymentLink);
+    }
 }
+
 
 
 

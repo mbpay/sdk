@@ -205,7 +205,101 @@ curl -X POST "https://www.mbpay.world/merchant/balance" \
 
 ---
 
-### 2. 商户付款
+### 2. 生成支付订单
+
+生成支付订单并返回收银台页面链接。
+
+#### 接口地址
+
+```
+POST /merchant/generatepaylink
+```
+
+#### 请求参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| merchant_id | int64 | 是 | 商户ID（SDK 自动添加，从 merchant_id 参数获取） |
+| order_no | string | 是 | 商户订单号（必须唯一，建议使用时间戳+随机数） |
+| subject | string | 是 | 商品描述 |
+| amount | int64 | 是 | 订单金额（分，必须大于 0） |
+| expire | int64 | 是 | 订单过期时间（Unix 时间戳，秒级，必须大于当前时间） |
+| notify_url | string | 是 | 支付成功后的回调通知地址 |
+| app_id | string | 是 | 商户的 App ID |
+| timestamp | int64 | 是 | Unix 时间戳 |
+| sign | string | 是 | 签名值 |
+
+#### 请求示例
+
+```bash
+curl -X POST "https://www.mbpay.world/merchant/generatepaylink" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "merchant_id=1" \
+  -d "order_no=ORD202501011200001234567890" \
+  -d "subject=购买VIP会员" \
+  -d "amount=10000" \
+  -d "expire=1704067200" \
+  -d "notify_url=https://example.com/notify" \
+  -d "app_id=your_app_id_123" \
+  -d "timestamp=1704067200" \
+  -d "sign=5f4dcc3b5aa765d61d8327deb882cf99..."
+```
+
+#### 返回结果
+
+**成功响应：**
+
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "payment_link": "https://pay.mbpay.world/payorder?id=e3c070b9-cef9-4ff3-83ea-d9d330d25195"
+  }
+}
+```
+
+**失败响应：**
+
+```json
+{
+  "code": 12011,
+  "message": "order_no_already_exists",
+  "data": null
+}
+```
+
+#### 返回字段说明
+
+| 字段名 | 类型 | 说明 |
+|--------|------|------|
+| payment_link | string | 收银台页面链接，用户访问此链接进行支付 |
+
+#### 错误码
+
+| 错误码 | 说明 |
+|--------|------|
+| 0 | 成功 |
+| 12000 | app_id 为空 |
+| 12001 | sign 为空 |
+| 12002 | timestamp 为空 |
+| 12003 | 商户不存在 |
+| 12005 | 签名错误 |
+| 12010 | notify_url 为空 |
+| 12011 | 订单号已存在 / 商户不存在 |
+| 12012 | amount 为空或无效 |
+| 12013 | expire_time_error（过期时间错误，必须大于当前时间） |
+
+#### 业务说明
+
+1. **订单号唯一性**：`order_no` 必须在商户维度内唯一，重复的订单号会返回错误
+2. **过期时间**：`expire` 必须是 Unix 时间戳（秒级），且必须大于当前时间
+3. **回调通知**：支付成功后，系统会向 `notify_url` 发送回调通知
+4. **收银台链接**：返回的 `payment_link` 是收银台页面链接，用户访问此链接进行支付
+
+---
+
+### 3. 商户付款
 
 商户向用户地址付款。
 
@@ -321,6 +415,7 @@ curl -X POST "https://www.mbpay.world/merchant/pay" \
 | 12010 | 余额不足 | 商户余额不足以支付订单金额和手续费 |
 | 12011 | 订单号已存在 / 收款地址不存在 | 检查订单号是否重复，或收款地址是否正确 |
 | 12012 | 系统错误 | 系统内部错误，稍后重试或联系技术支持 |
+| 12013 | 过期时间错误 | expire 必须大于当前时间 |
 
 ---
 
@@ -388,6 +483,6 @@ curl -X POST "https://www.mbpay.world/merchant/pay" \
 
 ---
 
-**文档版本**: v1.0  
+**文档版本**: v1.1  
 **最后更新**: 2025-11-11
 
