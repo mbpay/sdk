@@ -219,7 +219,6 @@ POST /merchant/generatepaylink
 
 | 参数名 | 类型 | 必填 | 说明 |
 |--------|------|------|------|
-| merchant_id | int64 | 是 | 商户ID（SDK 自动添加，从 merchant_id 参数获取） |
 | order_no | string | 是 | 商户订单号（必须唯一，建议使用时间戳+随机数） |
 | subject | string | 是 | 商品描述 |
 | amount | int64 | 是 | 订单金额（分，必须大于 0） |
